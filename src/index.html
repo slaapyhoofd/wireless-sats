@@ -1,21 +1,38 @@
 <!DOCTYPE html>
 <html lang='en'>
 <head>
+    <title>Wireless Sats</title>
+    <meta name="description" content="Paste any bolt11 lightning invoice and pay with your lightning enabled NFC card!">
+    <meta property="og:title" content="Wireless Sats">
+    <meta property="og:description" content="Paste any bolt11 lightning invoice and pay with your lightning enabled NFC card!">
+    <meta property="og:image" content="/apple-touch-icon.png">
+
     <link rel='stylesheet' href='https://unpkg.com/@picocss/pico@latest/css/pico.min.css'>
-    <title></title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
 </head>
 <body>
 <main class='container'>
     <hgroup>
         <h1>Wireless Sats</h1>
-        <h2>Past any bolt11 lightning invoice and pay with your lightning enabled NFC card!</h2>
+        <h2>Paste any bolt11 lightning invoice and pay with your lightning enabled NFC card! (Only supported on Chrome on Android)</h2>
     </hgroup>
-    <small>Only supported on Chrome on Android!</small>
-    <div class='grid'>
+    <ol>
+        <li>Scan your invoice by QR or paste it from your clipboard</li>
+        <li>Click the listen button and tap your NFC card to pay the invoice</li>
+    </ol>
+    <div>
         <label for='invoice'>Invoice <input type='text' id='invoice' name='invoice'></label>
-        <textarea id='textarea' rows='20' cols='50' readonly></textarea>
-        <button id='button'>Listen</button>
+        <button id='paste'>Paste</button>
+        <button id='scan'>Scan</button>
+        <video id="video"></video>
+        <button id='listen'>Listen</button>
     </div>
+    <article id="log">
+        <header>Log</header>
+    </article>
 </main>
 </body>
 </html>
