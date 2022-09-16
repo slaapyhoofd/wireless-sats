@@ -1,4 +1,4 @@
-import { ErrorReason, handleLNURL, NFCReader } from 'lnurl-nfc';
+import { ErrorReason, handleLNURL, LnurlReader } from 'lnurl-nfc';
 import QrScanner from 'qr-scanner';
 
 function log(text: string, error?: boolean) {
@@ -56,29 +56,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   buttonListen?.addEventListener('click', async () => {
     try {
       buttonListen.ariaBusy = 'true';
-      const nfcReader = new NFCReader();
-      log('starting to listen for NFC tag.');
-      // Could choose to provide an abortsignal to this call for a timeout for example.
-      const lnurl = await nfcReader.listen();
-      log(`lnurl found`);
-      await handleLNURL(lnurl, invoice?.value, 'proxy.php').then((result) => {
-        if (result.success) {
-          log('invoice payment initiated!');
-        } else {
-          log(result.message, true);
-        }
-        
-      });
+      const lnurlReader = new LnurlReader();
+      lnurlReader.onLnurlRead = async (lnurl) => {
+        log(`lnurl found`)
+        await handleLNURL(lnurl, invoice?.value, 'proxy.php').then((result) => {
+          if (result.success) {
+            log('invoice payment initiated!');
+          } else {
+            log(result.message, true);
+          }
+        });
+        buttonListen.ariaBusy = 'false';
+      };
+
+      lnurlReader.onReadingError = (error, detail) => {
+        log(`reading error: ${ErrorReason[error]}${detail ? `, type: ${detail.type}` : ''}`, true);
+      };
+      log('Checking NFC permissions');
+      await lnurlReader.startListening();
+      log('listening for NFC tags');
       
     } catch (e: any) {
+      buttonListen.ariaBusy = 'false';
       if (e in ErrorReason) {
         log(ErrorReason[e], true);
       } else {
         log(e.message, true);
       }
     }
-
-    log('done');
-    buttonListen.ariaBusy = 'false';
   });
 });
