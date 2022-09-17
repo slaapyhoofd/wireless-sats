@@ -56,9 +56,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   buttonListen?.addEventListener('click', async () => {
     try {
       buttonListen.ariaBusy = 'true';
+
       const lnurlReader = new LnurlReader();
       lnurlReader.onLnurlRead = async (lnurl) => {
-        log(`lnurl found`)
+        log(`lnurl found`);
         await handleLNURL(lnurl, invoice?.value, 'proxy.php').then((result) => {
           if (result.success) {
             log('invoice payment initiated!');
@@ -72,10 +73,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       lnurlReader.onReadingError = (error, detail) => {
         log(`reading error: ${ErrorReason[error]}${detail ? `, type: ${detail.type}` : ''}`, true);
       };
+
       log('Checking NFC permissions');
       await lnurlReader.startListening();
       log('listening for NFC tags');
-      
     } catch (e: any) {
       buttonListen.ariaBusy = 'false';
       if (e in ErrorReason) {
