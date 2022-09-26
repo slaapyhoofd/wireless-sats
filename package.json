@@ -1,6 +1,6 @@
 {
   "name": "wireless-sats",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Past any bolt11 lightning invoice and pay with your lightning enabled NFC card!",
   "main": "dist/index.js",
   "scripts": {
@@ -30,7 +30,7 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
-    "lnurl-nfc": "^0.2.1",
+    "lnurl-nfc": "^0.2.3",
     "qr-scanner": "^1.4.1"
   }
 }

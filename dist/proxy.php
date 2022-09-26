@@ -1,99 +1,32 @@
 <?php
+// Convert post data to json (array)
+$jsonData = json_decode(file_get_contents('php://input') , true);
 
-  $url = $_REQUEST["url"];
+// Extract data from json (array)
+$url = $jsonData["url"];
 
-  if(!$url) {
-    echo "You need to pass in a target URL.";
-    return;
-  }
+$httpHeader = array(
+    'Content-Type: application/json'
+);
 
-  $response = "";
-  switch (getMethod()) {
-    case 'POST':
-      $response = makePostRequest(getPostData(), $url);
-      break;
-    case 'PUT':
-      $response = makePutRequest(getPutOrDeleteData($url), $url);
-      break;
-    case 'DELETE':
-      $response = makeDeleteRequest($url);
-      break;
-    case 'GET':
-      $response = makeGetRequest($url);
-      break;
-    default:
-      echo "This proxy only supports POST, PUT, DELETE AND GET REQUESTS.";
-      return;
-  }
+// Create a new cURL resource
+$ch = curl_init($url);
 
-  echo $response;
+// The original request is a POST, but we want to do a GET
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
 
-  function getMethod() {
-    return $_SERVER["REQUEST_METHOD"];
-  }
+// Set the content type to application/json
+curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
 
-  function getPostData() {
-    return http_build_query($_POST);
-  }
+// Return response instead of outputting
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-  function getPutOrDeleteData($url) {
-    $data = substr(file_get_contents('php://input'), strlen($url));
-    return $data;
-  }
+// Execute the POST request
+$result = curl_exec($ch);
 
-  function makePostRequest($data, $url) {
-    $httpHeader = array(
-    'Content-Type: application/json',
-    'Content-Length: ' . strlen($data));
+// Close cURL resource
+curl_close($ch);
 
-    return makePutOrPostCurl('POST', $data, true, $httpHeader, $url);
-  }
-
-  function makePutRequest($data, $url) {
-
-    return makePutOrPostCurl('PUT', $data, true, $httpHeader, $url);
-  }
-
-  function makeDeleteRequest($url) {
-    $ch = initCurl($url);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-    $response = curl_exec($ch);
-    curl_close($ch);
-    return $response;
-  }
-
-  function makeGetRequest($url) {
-    $ch = initCurl($url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-    $response = curl_exec($ch);
-    curl_close($ch);
-
-    return $response;
-  }
-
-  function makePutOrPostCurl($type, $data, $returnTransfer, $httpHeader, $url) {
-
-    $ch = initCurl($url);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $type);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, $returnTransfer);
-
-    $response = curl_exec($ch);
-    curl_close($ch);
-    return $response;
-  }
-
-  function initCurl($url) {
-    $httpHeader = array(
-    'Content-Type: application/x-www-form-urlencoded');
-
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
-    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36');
-
-    return $ch;
-  }
-
-
+header('Content-Type: application/json');
+echo $result;
 ?>
