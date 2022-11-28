@@ -31,6 +31,6 @@
   },
   "dependencies": {
     "lnurl-nfc": "^0.2.4",
-    "qr-scanner": "^1.4.1"
+    "qr-scanner": "^1.4.2"
   }
 }
